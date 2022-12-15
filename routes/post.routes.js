@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+// const { request } = require('../app.js');
 const PostModel = require('../models/Post.model.js');
 const UserModel = require('../models/User.model.js');
 
@@ -7,24 +8,31 @@ const router = express.Router();
 
 //Create new Post
 
-router.post('/', (req, res) => {
-  const newPost = new PostModel(req.body);
-  newPost
-    .save()
-    .then((post) => {
-      res.status(200).json('Post created');
-    })
-    .catch((error) => {
-      res.status(500);
-    });
+router.post('/users/:id/post', (req, res) => {
+  console.log("backend call");
+console.log(req.body)
+PostModel.create(req.body).then((post) => {
+  console.log(post);
+  res.status(200).json('Post created');
+})
+
+  // const newPost = new PostModel(req.body);
+  // newPost
+  //   .save()
+  //   .then((post) => {
+  //     res.status(200).json('Post created');
+  //   })
+  //   .catch((error) => {
+  //     res.status(500);
+  //   });
 });
 
 //Get a post
 
-router.get('/:id', (req, res) => {
+router.get('/users/:id/post', (req, res) => {
   const { id } = req.params;
 
-  PostModel.findById(id)
+  PostModel.find({userId: id})
     .then((post) => {
       res.status(200).json(post);
     })
@@ -35,7 +43,7 @@ router.get('/:id', (req, res) => {
 
 // Update a post
 
-router.put('/:id', async (req, res) => {
+router.put('/users/:id/post', async (req, res) => {
   const postId = req.params.id;
   const { userId } = req.body;
   try {
@@ -53,7 +61,7 @@ router.put('/:id', async (req, res) => {
 
 //Delete a post
 
-router.delete('/:id', async (req, res) => {
+router.delete('/users/:id/post', async (req, res) => {
   const { id } = req.params;
   const { userId } = req.body;
   try {
@@ -71,7 +79,7 @@ router.delete('/:id', async (req, res) => {
 
 //Likes/disikes post
 
-router.put('/:id/like', async (req, res) => {
+router.put('users/:id/post/like', async (req, res) => {
   const id = req.params.id;
   const { userId } = req.body;
   try {
@@ -89,7 +97,7 @@ router.put('/:id/like', async (req, res) => {
 });
 
 //Get timeline posts
-router.get('/:id/timeline', async (req, res) => {
+router.get('users/:id/post/timeline', async (req, res) => {
   const userId = req.params.id;
   try {
     const currentUserPosts = await PostModel.find({ userId: userId });
